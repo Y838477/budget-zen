@@ -1,104 +1,140 @@
-# BU.ZE
+# Budget-Zen
 
-Budget-zen
+Budget-Zen is a simple and privacy-focused family budgeting app designed to help you record and manage all your incoming and outgoing payments throughout the month.
 
-This application helps you managing your monthly family budget.
+---
 
-Accounting can be fun and simple and this application aims at getting you as a user, on the right track
-in saving more money every month so that you can afford some extra more often.
+## 🔐 Privacy by Design
 
-Download the application and start recording your first financial transactions.
-As the amount of records grows up, you will be able to spot where you can save money, how much tax you are paying every month, what are the mandatory expenses, and become better at making the decision of buying or not the next item you saw on TV.
+Budget-Zen does **not** collect any personal information.  
+We strongly encourage users to use only generic and non-identifiable names when creating payment methods or transaction journals.
 
-The application will give you reports and statistics that will help figure out whether you are on a good sport or you have to make some decisions.
+**Example:**
+- "Visa CB John" → Use "Visa CB"
+- "Savings Account #1" → Use "Savings #1"
 
-Disclaimer:
+All data remains **completely under your control** and is stored **locally on your device**.
 
-A lot of the terms and wording are stolen from the financial and accounting world. This application is meant to be simple but complete.
-Although the application doesn't follow the double-entry bookkeeping method at the moment, the final objective - in the long term - is to make this application reliable for small businesses as well.
-As I am building this application I have to make a solid basement for further developments that will lean towards implementing double-entry bookkeeping, in order to fulfill the final objective.
-I would then have a simple version for families and a more advanced / professional version for small businesses.
+---
 
-## Your data is yours
+## 📘 Transaction Journals
 
-You don't have to register to our website.
+Before you can start managing your finances, you’ll need to create a **Transaction Journal**.  
+A journal works like a ledger, recording all income and expenses for a specific period (typically one month).
 
-You don't have to give us your email address, nor your phone number and your name.
+### Each journal includes:
+- A unique identifier (UUID)
+- A name
+- A category (e.g., "Checking Account", "Savings")
+- A period (e.g., May 2025)
+- An initial balance
+- A list of transactions
 
-Just download the app, install it on your computer, and everything you record within the app stays on your computer.
+The **category** of the journal reflects the nature of the account being tracked and helps generate accurate reports later.
 
-My goal is to keep growing as a developer and make a free application that is really useful for everyone.
+**Examples of categories:**
+- Checking Account
+- Savings Account
 
-## Empower yourself
+Categorizing journals allows for more advanced budgeting features, such as generating savings reports or automating transfers between checking and savings accounts.
 
-Take control of your budget easily.
+---
 
-When you first launch the application you will be prompted to add a journal in order to records your transactions.
-Once created, you can start recording journal entries (financial transactions).
-The more detail you give to your journal, the more precise will be the reports and forecasts. 
+## 💸 Recording Payments
 
-## Definitions
+When a journal is created, the balance is initialized to a user-defined amount.  
+Each new transaction will **increase (income)** or **decrease (expense)** the balance.
 
-Here are some definitions that will make sure everyone is on the same page.
+At the end of each month, the closing balance is carried over to the next month's journal.
 
-### A Journal
+### Types of transactions:
+- One-time
+- Recurring (monthly, quarterly, semi-annually, annually)
 
-A journal is ... is a detailed running record of all financial transactions. The journal includes information like the transaction date, (the accounts affected),
-the amount of the transaction. This accounting concept is often associated with double§entry bookkeeping method.
+### A valid transaction must include:
+- A date
+- A payee or recipient
+- A payment method
+- An amount
 
-In our application a journal has the following attributes:
+### Transactions may be:
+- Expense
+- Income
+- Refund
 
-* UUID
-* Name
-* Type
-* Balance
+### Accepted payment methods:
+- Check
+- Cash
+- Credit/Debit Card
+- Bank Transfer
+- Direct Debit
 
+For credit/debit card transactions, you can register multiple cards in the app.  
+When entering a payment, you’ll be prompted to select the appropriate card from your saved list.
 
-### A Journal Entry
+Each payment entry can optionally include a **description or note**, such as:
+- Check number
+- Contract number for a subscription
+- “Pending refund”
+- “Amazing dinner at the restaurant”
 
-A journal entry is the act of keeping or making records of any transactions.
-It can be either an income, which will increase the balance of your journal, or an expense which will decrease the journal balance.
+### Each transaction is defined by:
+- A UUID
+- Date
+- Category (income or expense)
+- Payee/Payer
+- Payment method
+- Amount
+- Description / Reference
+- Frequency (e.g., monthly, annually)
 
-In double-entry bookkeeping method, a journal entry can consist in several recordings, each of which is either a credit or a debit.
-The total of the debits must equal the total credits, or the journal entry is considered unbalanced.
-A properly documented journal entry consists of the correct date, amount(s) that will be debited, amount that will be credited, narration of the transaction, and unique reference number (i.e. check number).
+---
 
-In our application a journal entry has the following attributes:
+## 📊 Forecasting & Dashboard
 
-* UUID
-* Date
-* Description
-* Amount allocation
-* Mean of payment
-* Total amount
-* Reference number
-* Payment occurrence
+Budget-Zen gives you a clear view of your monthly finances through a smart dashboard.
 
-#### Accounting allocation
+You can classify your expenses into:
+- **Essential**
+- **Useful**
+- **Nice to Have**
+- **Unnecessary**
 
-In french, this is called "ventilation comptable" which can be translated into "accounting allocation" or "accounting venting".
-This is the act of allocating, separating or spreading the cost of a service or a product throughout several accounts.
-This is not mandatory nor a legal obligation, it is just a tool that helps strategic decision making and precise reporting.
+This classification helps users **make better decisions** at a glance.
 
-Example:
+Some default categories are pre-defined in the app to assist with sorting transactions and providing clarity on financial priorities.
 
-I go to the grocery store and I need to buy food and a hair-dryer.
-Let's say the total invoice is 75 USD.
-The hair-fryer cost 45 USD and the food cost 30 USD.
-Instead of recording 2 journal entries, I can record 1 journal entry and allocate the costs to different category or accounts.
-I will allocate 45 USD to the house equipment account or category and 30 USD to the food account or category.
-This way I can get a better overview of where I spend the money and where I can save money.
+### Default Income Categories:
+- Salary
+- Pension
+- Government Allowance
+- Real Estate Income
+- Donations Received
 
-In our application, accounting allocation is defined as follows:
+### Default Expense Categories:
+- Housing
+- Food & Groceries
+- Subscriptions
+- Entertainment
+- Vacations
+- Sports
+- Transportation
+- Taxes
+- Bank Fees
+- Tuition
+- Charitable Donations
+- Gifts
 
-* Journal entry UUID
-* Amount
-* Currency
-* Category / affected account
+---
 
-#### Payment occurrence
+## 🚀 Getting Started
 
-#### Mean of payment
+1. Download and install Budget-Zen.
+2. Create your first Transaction Journal.
+3. Record your income and expenses.
+4. Monitor your balance and make informed budgeting decisions.
 
-#### Category / Affected account
+---
 
+**Stay in control. Stay Zen.**  
+_Manage your family budget with simplicity and privacy._
