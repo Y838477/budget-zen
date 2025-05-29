@@ -18,7 +18,7 @@ class JournalCreationJsonTest {
 
     @Test
     void serialisationIsValid() throws IOException {
-        JournalCreation journalRequest = new JournalCreation("compte principal", JournalType.JOINT_ACCOUNT, 539.00);
+        JournalCreation journalRequest = new JournalCreation("compte principal", "JOINT_ACCOUNT", 539.00);
         JsonContent<JournalCreation> jsonRequest = json.write(journalRequest);
         assertThat(jsonRequest).isStrictlyEqualToJson("journalRequest.json");
         assertThat(jsonRequest).extractingJsonPathValue("@.journal_type").isNotEqualTo(JournalType.CURRENT_ACCOUNT.name());
@@ -33,6 +33,6 @@ class JournalCreationJsonTest {
                         "initial_balance": 935.00
                     }
                 """;
-        assertThat(json.parseObject(expected)).isEqualTo(new JournalCreation("economies", JournalType.SAVING_ACCOUNT, 935.00));
+        assertThat(json.parseObject(expected)).isEqualTo(new JournalCreation("economies", "SAVING_ACCOUNT", 935.00));
     }
 }

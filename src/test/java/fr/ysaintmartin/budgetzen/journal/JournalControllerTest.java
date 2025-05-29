@@ -5,24 +5,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@WebMvcTest(controllers = JournalController.class)
 class JournalControllerTest {
 
     @Autowired
     MockMvc mvcRequest;
 
     @Test
-    void createJournal_returnsHttpCreatedAndJsonBody() throws Exception {
+    void createJournal_returns_HttpCreatedAndJsonBody() throws Exception {
         String jsonRequest = """
                 {
                     "journal_title": "compte courant",
                     "journal_type": "CURRENT_ACCOUNT",
-                    "initial_balance": 913
+                    "initial_balance": 913.00
                 }
                 """;
         mvcRequest.perform(post("/journals")
@@ -32,4 +34,23 @@ class JournalControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonRequest));
     }
+
+    @Test
+    void createJournal_returns_InvalidJournalTypeError() throws Exception {
+        String jsonRequest = """
+                {
+                    "journal_title": "compte joint",
+                    "journal_type": "NEW_ACCOUNT",
+                    "initial_balance": 753.00
+                }
+                """;
+        MvcResult response = mvcRequest.perform(post("/journals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        assertThat(response.getResponse().getContentAsString()).isEqualTo("Journal type: 'NEW_ACCOUNT' is not valid.");
+    }
+
 }

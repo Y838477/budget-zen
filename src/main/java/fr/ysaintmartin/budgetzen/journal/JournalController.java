@@ -1,5 +1,6 @@
 package fr.ysaintmartin.budgetzen.journal;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JournalController {
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JournalCreation> createJournal(@RequestBody JournalCreation journalRequest) {
+    public ResponseEntity<JournalCreation> createJournal(@Valid @RequestBody JournalCreation journalRequest) {
         return new ResponseEntity<>(journalRequest,HttpStatus.CREATED);
     }
 }
