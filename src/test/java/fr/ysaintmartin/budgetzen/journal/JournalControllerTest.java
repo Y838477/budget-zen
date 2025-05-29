@@ -7,6 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.JOURNAL_TYPE_IS_NOT_VALID;
+import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.TITLE_IS_TOO_LONG;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,7 +52,26 @@ class JournalControllerTest {
                 .andExpect(status().isBadRequest())
                 .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).isEqualTo("Journal type: 'NEW_ACCOUNT' is not valid.");
+        assertThat(response.getResponse().getContentAsString())
+                .isEqualTo(String.format(JOURNAL_TYPE_IS_NOT_VALID, "NEW_ACCOUNT", "type"));
     }
 
+    @Test
+    void createJournal_returns_InvalidJournalNameError() throws Exception {
+        String jsonRequest = """
+                {
+                    "journal_title": "compte joint / compte joint compte / joint compte joint",
+                    "journal_type": "JOINT_ACCOUNT",
+                    "initial_balance": 591.00
+                }
+                """;
+        MvcResult response = mvcRequest.perform(post("/journals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        assertThat(response.getResponse().getContentAsString())
+                .isEqualTo(TITLE_IS_TOO_LONG, "compte joint / compte joint compte / joint compte joint", "title");
+    }
 }

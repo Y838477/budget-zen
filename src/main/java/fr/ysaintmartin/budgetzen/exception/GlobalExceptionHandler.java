@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest()
                 .body(ex.getBindingResult().getFieldErrors().stream()
-                        .map(fieldError -> String.format("Journal type: '%s' is not valid.", fieldError.getRejectedValue()))
-                        .collect(Collectors.joining(",")));
+                        .map(fieldError -> String.format(fieldError.getDefaultMessage(), fieldError.getRejectedValue(), fieldError.getField()))
+                        .collect(Collectors.joining("&&")));
     }
 }
