@@ -74,4 +74,19 @@ class JournalControllerTest {
         assertThat(response.getResponse().getContentAsString())
                 .isEqualTo(TITLE_IS_TOO_LONG, "compte joint / compte joint compte / joint compte joint", "title");
     }
+
+    @Test
+    void createJournal_returns_CreatedWhenInitialBalanceIsString() throws Exception {
+        String jsonRequest = """
+                {
+                    "journal_title": "compte joint",
+                    "journal_type": "JOINT_ACCOUNT",
+                    "initial_balance": "591.00"
+                }
+                """;
+        mvcRequest.perform(post("/journals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonRequest))
+                .andExpect(status().isCreated());
+    }
 }
