@@ -1,20 +1,32 @@
 package fr.ysaintmartin.budgetzen.journal;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/journals")
 public class JournalController {
 
+    private final JournalService journalService;
+
+    @Autowired
+    public JournalController(JournalService journalService) {
+        this.journalService = journalService;
+    }
+
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TransactionJournalCreated>> getTransactionJournals() {
+        return ResponseEntity.ok(journalService.getAllTransactionJournals());
+    }
+
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<JournalCreation> createJournal(@Valid @RequestBody JournalCreation journalRequest) {
-        return new ResponseEntity<>(journalRequest,HttpStatus.CREATED);
+    public ResponseEntity<TransactionJournalCreated> createJournal(@Valid @RequestBody JournalCreation journalRequest) {
+        return new ResponseEntity<>(journalService.createTransactionJournal(journalRequest), HttpStatus.CREATED);
     }
 }
