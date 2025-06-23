@@ -1,23 +1,25 @@
 package fr.ysaintmartin.budgetzen.journal;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.JOURNAL_TYPE_IS_NOT_VALID;
 import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.TITLE_IS_TOO_LONG;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = JournalController.class)
 class JournalControllerTest {
@@ -28,71 +30,53 @@ class JournalControllerTest {
     @MockitoBean
     JournalService journalService;
 
+    private static JsonNode requestsNodes;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeAll
+    static void init() throws IOException {
+        File jsonRequests = new File("/Users/ystm/Projets/java/spring/budget-zen/src/test/resources/fr/ysaintmartin/budgetzen/journal/journalRequestsDictionnary.json");
+        requestsNodes = new ObjectMapper().readTree(jsonRequests);
+    }
+
     @Test
     void createJournal_returns_HttpCreatedAndJsonBody() throws Exception {
-        String jsonRequest = """
-                {
-                    "journal_title": "compte courant",
-                    "journal_type": "CURRENT_ACCOUNT",
-                    "initial_balance": 913.00
-                }
-                """;
+        String validJsonRequest = String.valueOf(requestsNodes.get("creationIsValid"));
         String jsonResponse = """
-                {
-                    "journal_uuid": "uuid",
-                    "journal_title": "compte courant",
-                    "journal_type": "CURRENT_ACCOUNT",
-                    "journal_balance": 913.00
-                }
+                {"journal_uuid":"uuid","journal_title":"compte courant","journal_type":"CURRENT_ACCOUNT","journal_balance":913.00}
                 """;
 
-        when(journalService.createTransactionJournal(new JournalCreation("compte courant", "CURRENT_ACCOUNT", 913.00)))
+        when(journalService.createTransactionJournal(objectMapper.readValue(validJsonRequest, JournalCreation.class)))
                 .thenReturn(new TransactionJournalCreated("uuid", "compte courant", "CURRENT_ACCOUNT", 913.00));
 
         mvcRequest.perform(post("/journals")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
-                .andDo(result -> result.getResponse().setContentType(MediaType.APPLICATION_JSON_VALUE))
+                        .content(validJsonRequest))
                 .andExpect(status().isCreated())
                 .andExpect(content().json(jsonResponse));
     }
 
     @Test
     void createJournal_returns_InvalidJournalTypeError() throws Exception {
-        String jsonRequest = """
-                {
-                    "journal_title": "compte joint",
-                    "journal_type": "NEW_ACCOUNT",
-                    "initial_balance": 753.00
-                }
-                """;
-        MvcResult response = mvcRequest.perform(post("/journals")
+        String jsonRequest = String.valueOf(requestsNodes.get("creationJournalTypeError"));
+
+        mvcRequest.perform(post("/journals")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest())
-                .andReturn();
-
-        assertThat(response.getResponse().getContentAsString())
-                .isEqualTo(String.format(JOURNAL_TYPE_IS_NOT_VALID, "NEW_ACCOUNT", "type"));
+                .andExpect(jsonPath("$.error_message").value(String.format(JOURNAL_TYPE_IS_NOT_VALID, "NEW_ACCOUNT", "type")));
     }
 
     @Test
     void createJournal_returns_InvalidJournalNameError() throws Exception {
-        String jsonRequest = """
-                {
-                    "journal_title": "compte joint / compte joint compte / joint compte joint",
-                    "journal_type": "JOINT_ACCOUNT",
-                    "initial_balance": 591.00
-                }
-                """;
-        MvcResult response = mvcRequest.perform(post("/journals")
+        String jsonRequest = String.valueOf(requestsNodes.get("creationTitleIsTooLongError"));
+
+        mvcRequest.perform(post("/journals")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest())
-                .andReturn();
+                .andExpect(jsonPath("$.error_message").value(String.format(TITLE_IS_TOO_LONG, "compte courant numero 00112233221100", "title")));
 
-        assertThat(response.getResponse().getContentAsString())
-                .isEqualTo(TITLE_IS_TOO_LONG, "compte joint / compte joint compte / joint compte joint", "title");
     }
 
     @Test

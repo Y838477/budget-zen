@@ -17,4 +17,10 @@ class JournalServiceTest {
                 .isNotNull();
     }
 
+    @Test
+    void getAllTransactionJournals_returnsListOfTransactionJournalCreated() {
+        assertThat(journalService.getAllTransactionJournals())
+                .isNotNull();
+    }
+
 }

@@ -1,0 +1,17 @@
+{
+  "creationIsValid": {
+    "journal_title": "compte principal",
+    "journal_type": "JOINT_ACCOUNT",
+    "initial_balance": 539.00
+  },
+  "creationJournalTypeError": {
+    "journal_title": "compte principal",
+    "journal_type": "NEW_ACCOUNT",
+    "initial_balance": 539.00
+  },
+  "creationTitleIsTooLongError": {
+    "journal_title": "compte courant numero 00112233221100",
+    "journal_type": "NEW_ACCOUNT",
+    "initial_balance": 539.00
+  }
+}
