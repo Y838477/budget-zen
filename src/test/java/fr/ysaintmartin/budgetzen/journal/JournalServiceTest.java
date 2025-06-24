@@ -23,4 +23,10 @@ class JournalServiceTest {
                 .isNotNull();
     }
 
+    @Test
+    void getTransactionJournalByUuid_returnsTransactionJournalCreated() {
+        assertThat(journalService.getTransactionJournalByUuid("uuid"))
+                .isNotNull();
+    }
+
 }

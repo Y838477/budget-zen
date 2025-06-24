@@ -8,6 +8,13 @@ import java.util.List;
 @Service
 public class JournalService {
 
+    List<TransactionJournalCreated> transactionJournals = new ArrayList<>();
+
+    public JournalService() {
+        transactionJournals.add(new TransactionJournalCreated("uuid", "compte courant", "CURRENT_ACCOUNT", 513.00));
+        transactionJournals.add(new TransactionJournalCreated("uuid", "compte épargne", "SAVING_ACCOUNT", 315.00));
+    }
+
     public TransactionJournalCreated createTransactionJournal(JournalCreation creationInformation) {
         return new TransactionJournalCreated(
                 "uuid",
@@ -17,9 +24,13 @@ public class JournalService {
     }
 
     public List<TransactionJournalCreated> getAllTransactionJournals() {
-        List<TransactionJournalCreated> transactionJournalCreatedList = new ArrayList<>();
-        transactionJournalCreatedList.add(new TransactionJournalCreated("uuid", "compte courant", "CURRENT_ACCOUNT", 513.00));
-        transactionJournalCreatedList.add(new TransactionJournalCreated("uuid", "compte épargne", "SAVING_ACCOUNT", 315.00));
-        return transactionJournalCreatedList;
+        return transactionJournals;
+    }
+
+    public TransactionJournalCreated getTransactionJournalByUuid(String uuid) {
+        return transactionJournals.stream()
+                .filter(txJournal -> txJournal.uuid().equals(uuid))
+                .findFirst()
+                .orElse(null);
     }
 }
