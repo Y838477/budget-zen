@@ -21,4 +21,9 @@ public class GlobalExceptionHandler {
                         .map(fieldError -> new InvalidTransactionJournalRequest(Instant.now(), HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), String.format(fieldError.getDefaultMessage(), fieldError.getRejectedValue(), fieldError.getField())))
                         .orElse(new InvalidTransactionJournalRequest(Instant.now(), HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name(), "La requête envoyée est incorrecte.")));
     }
+
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<Object> handleObjectNotFoundException() {
+        return ResponseEntity.notFound().build();
+    }
 }

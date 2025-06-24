@@ -2,6 +2,7 @@ package fr.ysaintmartin.budgetzen.journal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fr.ysaintmartin.budgetzen.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,5 +121,32 @@ class JournalControllerTest {
         mvcRequest.perform(get("/journals"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+    }
+
+    @Test
+    void getTransactionJournalByUuid_returns_JournalTransactionCreatedInfo() throws Exception {
+        String jsonResponse = """
+                {
+                    "journal_uuid": "uuid",
+                    "journal_title": "compte enregistré",
+                    "journal_type": "CURRENT_ACCOUNT",
+                    "journal_balance": 357.55
+                }
+                """;
+
+        when(journalService.getTransactionJournalByUuid("uuid"))
+                .thenReturn(new TransactionJournalCreated("uuid", "compte enregistré", "CURRENT_ACCOUNT", 357.55));
+
+        mvcRequest.perform(get("/journals/uuid"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(jsonResponse));
+    }
+
+    @Test
+    void getTransactionJournalByUuid_throws_ObjectNotFoundException() throws Exception {
+        when(journalService.getTransactionJournalByUuid("id"))
+                .thenThrow(ObjectNotFoundException.class);
+        mvcRequest.perform(get("/journals/id"))
+                .andExpect(status().isNotFound());
     }
 }

@@ -1,5 +1,6 @@
 package fr.ysaintmartin.budgetzen.journal;
 
+import fr.ysaintmartin.budgetzen.exception.ObjectNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,11 @@ public class JournalController {
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TransactionJournalCreated>> getTransactionJournals() {
         return ResponseEntity.ok(journalService.getAllTransactionJournals());
+    }
+
+    @GetMapping(value = "/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionJournalCreated> getTransactionJournalByUuid(@PathVariable String uuid) throws ObjectNotFoundException {
+        return ResponseEntity.ok(journalService.getTransactionJournalByUuid(uuid));
     }
 
     @PostMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
