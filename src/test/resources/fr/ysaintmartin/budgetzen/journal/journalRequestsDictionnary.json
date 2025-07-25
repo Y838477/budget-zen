@@ -11,7 +11,7 @@
   },
   "creationTitleIsTooLongError": {
     "journal_title": "compte courant numero 00112233221100",
-    "journal_type": "NEW_ACCOUNT",
+    "journal_type": "SAVING_ACCOUNT",
     "initial_balance": 539.00
   }
 }
