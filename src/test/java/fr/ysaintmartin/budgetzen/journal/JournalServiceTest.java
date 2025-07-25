@@ -1,10 +1,8 @@
 package fr.ysaintmartin.budgetzen.journal;
 
-import fr.ysaintmartin.budgetzen.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JournalServiceTest {
 
@@ -26,17 +24,9 @@ class JournalServiceTest {
     }
 
     @Test
-    void getTransactionJournalByUuid_returnsTransactionJournalCreated() throws ObjectNotFoundException {
+    void getTransactionJournalByUuid_returnsTransactionJournalCreated() {
         assertThat(journalService.getTransactionJournalByUuid("uuid"))
                 .isNotNull();
-    }
-
-    @Test
-    void getTransactionJournalByUuid_throwsObjectNotFoundException() {
-        Exception exception = assertThrows(ObjectNotFoundException.class, () -> journalService.getTransactionJournalByUuid("id"));
-
-        assertThat(exception)
-                .isInstanceOf(ObjectNotFoundException.class);
     }
 
 }

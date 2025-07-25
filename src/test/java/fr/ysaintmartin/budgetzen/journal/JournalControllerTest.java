@@ -2,7 +2,6 @@ package fr.ysaintmartin.budgetzen.journal;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fr.ysaintmartin.budgetzen.exception.ObjectNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.JOURNAL_TYPE_IS_NOT_VALID;
 import static fr.ysaintmartin.budgetzen.utils.constants.JournalErrorMessages.TITLE_IS_TOO_LONG;
@@ -97,26 +98,28 @@ class JournalControllerTest {
 
     @Test
     void getTransactionJournals_returns_ListOfTransactionJournalCreated() throws Exception {
+        UUID uuidCurrentAccount = UUID.randomUUID();
+        UUID uuidSavingAccount = UUID.randomUUID();
         String jsonResponse = """
                     [
                         {
-                            "journal_uuid": "uuid",
+                            "journal_uuid": "%s",
                             "journal_title": "compte courant",
                             "journal_type": "CURRENT_ACCOUNT",
                             "journal_balance": 379.00
                         },
                         {
-                            "journal_uuid": "uuid",
+                            "journal_uuid": "%s",
                             "journal_title": "compte épargne",
                             "journal_type": "SAVING_ACCOUNT",
                             "journal_balance": 973.00
                         }
                     ]
-                """;
+                """.formatted(uuidCurrentAccount, uuidSavingAccount);
 
         when(journalService.getAllTransactionJournals())
-                .thenReturn(List.of(new TransactionJournalCreated("uuid", "compte courant", "CURRENT_ACCOUNT", 379.00),
-                        new TransactionJournalCreated("uuid", "compte épargne", "SAVING_ACCOUNT", 973.00)));
+                .thenReturn(List.of(new TransactionJournalCreated(uuidCurrentAccount.toString(), "compte courant", "CURRENT_ACCOUNT", 379.00),
+                        new TransactionJournalCreated(uuidSavingAccount.toString(), "compte épargne", "SAVING_ACCOUNT", 973.00)));
 
         mvcRequest.perform(get("/journals"))
                 .andExpect(status().isOk())
@@ -135,7 +138,7 @@ class JournalControllerTest {
                 """;
 
         when(journalService.getTransactionJournalByUuid("uuid"))
-                .thenReturn(new TransactionJournalCreated("uuid", "compte enregistré", "CURRENT_ACCOUNT", 357.55));
+                .thenReturn(Optional.of(new TransactionJournalCreated("uuid", "compte enregistré", "CURRENT_ACCOUNT", 357.55)));
 
         mvcRequest.perform(get("/journals/uuid"))
                 .andExpect(status().isOk())
@@ -144,8 +147,6 @@ class JournalControllerTest {
 
     @Test
     void getTransactionJournalByUuid_throws_ObjectNotFoundException() throws Exception {
-        when(journalService.getTransactionJournalByUuid("id"))
-                .thenThrow(ObjectNotFoundException.class);
         mvcRequest.perform(get("/journals/id"))
                 .andExpect(status().isNotFound());
     }

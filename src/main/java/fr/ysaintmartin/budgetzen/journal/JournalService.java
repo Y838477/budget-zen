@@ -1,10 +1,10 @@
 package fr.ysaintmartin.budgetzen.journal;
 
-import fr.ysaintmartin.budgetzen.exception.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JournalService {
@@ -28,10 +28,9 @@ public class JournalService {
         return transactionJournals;
     }
 
-    public TransactionJournalCreated getTransactionJournalByUuid(String uuid) throws ObjectNotFoundException {
+    public Optional<TransactionJournalCreated> getTransactionJournalByUuid(String uuid) {
         return transactionJournals.stream()
                 .filter(txJournal -> txJournal.uuid().equals(uuid))
-                .findFirst()
-                .orElseThrow(ObjectNotFoundException::new);
+                .findFirst();
     }
 }
