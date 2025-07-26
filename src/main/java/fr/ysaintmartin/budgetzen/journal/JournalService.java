@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class JournalService {
@@ -17,11 +18,16 @@ public class JournalService {
     }
 
     public TransactionJournalCreated createTransactionJournal(JournalCreation creationInformation) {
-        return new TransactionJournalCreated(
-                "uuid",
+        return save(creationInformation);
+    }
+
+    private TransactionJournalCreated save(JournalCreation creationInformation) {
+        TransactionJournalCreated transactionJournalCreated = new TransactionJournalCreated(UUID.randomUUID().toString(),
                 creationInformation.title(),
                 creationInformation.type(),
                 creationInformation.initialBalance());
+        transactionJournals.add(transactionJournalCreated);
+        return transactionJournalCreated;
     }
 
     public List<TransactionJournalCreated> getAllTransactionJournals() {
